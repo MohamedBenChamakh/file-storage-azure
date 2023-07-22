@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileAlreadyExistsException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 
 @RestController
@@ -50,7 +52,7 @@ public class FileController {
     }
 
     @GetMapping("/{containerName}/{blobName}")
-    public ResponseEntity<byte[]> downloadFile(@PathVariable String containerName, @PathVariable String blobName) {
+    public ResponseEntity<byte[]> downloadFile(@PathVariable String containerName, @PathVariable String blobName) throws IOException {
         // Check if the file exists
         BlobProperties blobProperties = azureBlobService.getBlobProperties(containerName, blobName);
         if (blobProperties == null) {
@@ -60,6 +62,7 @@ public class FileController {
 
         // File exists, proceed with downloading
         byte[] fileContent = azureBlobService.downloadFile(containerName, blobName);
+
         // Set appropriate headers and return the file content in the response
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM).body(fileContent);
     }
