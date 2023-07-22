@@ -128,11 +128,42 @@ class FileControllerTest {
     @DisplayName("delete file from blob test")
     @Test
     void deleteFile() {
+        String container = "container";
+        String blobName = "video.mp4";
+        when(service.getBlobProperties(container, blobName)).thenReturn(mock(BlobProperties.class));
+
+        ResponseEntity responseEntity = fileController.deleteFile(container, blobName);
+
+        verify(service).deleteFile(container, blobName);
+        assertThat(responseEntity.getStatusCode().is2xxSuccessful()).isTrue();
+    }
+
+    @DisplayName("delete file from blob test failed - file don't exist")
+    @Test
+    void deleteFileFailed_FileDontExist() {
+        String container = "container";
+        String blobName = "video.mp4";
+        when(service.getBlobProperties(container, blobName)).thenReturn(null);
+
+        ResponseEntity responseEntity = fileController.deleteFile(container, blobName);
+
+        verify(service,never()).deleteFile(container, blobName);
+        assertThat(responseEntity.getStatusCode().is4xxClientError()).isTrue();
     }
 
     @DisplayName("get file url from blob test")
     @Test
     void getFileUrl() {
+        String container = "container";
+        String blobName = "video.mp4";
+        String returnValue = new String();
+        when(service.generateSasToken(container,blobName)).thenReturn(returnValue);
+        when(service.getAccountName()).thenReturn(returnValue);
+
+
+        String response = fileController.getFileUrl(container,blobName);
+
+        assertThat(response).isNotBlank();
     }
 
     @DisplayName("list files in blob test")
