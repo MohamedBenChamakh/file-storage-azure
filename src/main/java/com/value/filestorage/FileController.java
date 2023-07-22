@@ -1,22 +1,23 @@
 package com.value.filestorage;
 
 import com.azure.storage.blob.models.BlobProperties;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.FileAlreadyExistsException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
 
 @RestController
+@Slf4j
 @RequestMapping("/files")
 public class FileController {
 
@@ -39,8 +40,8 @@ public class FileController {
 
         // Check if the file extension is valid (allowing only images and videos in this example)
         String originalFilename = file.getOriginalFilename();
-        if (originalFilename != null && !originalFilename.matches(".+\\.(jpg|jpeg|png|gif|mp4|avi|mkv)$")) {
-            throw new IllegalArgumentException("Invalid file extension. Allowed extensions: jpg, jpeg, png, gif, mp4, avi, mkv.");
+        if (originalFilename != null && !originalFilename.matches(".+\\.(jpg|jpeg|png|mp4)$")) {
+            throw new IllegalArgumentException("Invalid file extension. Allowed extensions: jpg, jpeg, png, mp4.");
         }
 
         // Check if the blob name already exists in the container
@@ -62,9 +63,50 @@ public class FileController {
 
         // File exists, proceed with downloading
         byte[] fileContent = azureBlobService.downloadFile(containerName, blobName);
-
         // Set appropriate headers and return the file content in the response
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM).body(fileContent);
+    }
+
+    @GetMapping("/images/{containerName}/{blobName}")
+    public ResponseEntity<byte[]> downloadImage(@PathVariable String containerName, @PathVariable String blobName) throws IOException {
+        // Check if the file exists
+        BlobProperties blobProperties = azureBlobService.getBlobProperties(containerName, blobName);
+        if (blobProperties == null) {
+            // Return 404 Not Found if the blob doesn't exist
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        // File exists, proceed with downloading
+        byte[] fileContent = azureBlobService.downloadFile(containerName, blobName);
+
+        if (blobName.matches(".+\\.(jpg|jpeg)$")) {
+            return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(fileContent);
+        }else if(blobName.matches(".+\\.(png)$")){
+            return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(fileContent);
+        }else{
+            return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM).body(fileContent);
+        }
+
+    }
+
+    @GetMapping("/videos/{containerName}/{blobName}")
+    public ResponseEntity<byte[]> downloadVideo(@PathVariable String containerName, @PathVariable String blobName) throws IOException {
+        // Check if the file exists
+        BlobProperties blobProperties = azureBlobService.getBlobProperties(containerName, blobName);
+        if (blobProperties == null) {
+            // Return 404 Not Found if the blob doesn't exist
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        // File exists, proceed with downloading
+        byte[] fileContent = azureBlobService.downloadFile(containerName, blobName);
+
+        if (blobName.matches(".+\\.(mp4)$")) {
+            return ResponseEntity.ok().contentType(MediaType.valueOf("video/mp4")).body(fileContent);
+        }else{
+            return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM).body(fileContent);
+        }
+
     }
 
     @DeleteMapping("/{containerName}/{blobName}")

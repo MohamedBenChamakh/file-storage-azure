@@ -60,6 +60,7 @@ public class AzureBlobService {
         BlobServiceClient blobServiceClient = new BlobServiceClientBuilder().connectionString(connectionString).buildClient();
         blobServiceClient.getBlobContainerClient(containerName).getBlobClient(blobName)
                 .upload(file.getInputStream(), file.getSize());
+
     }
 
     public byte[] downloadFile(String containerName, String blobName) throws IOException {
