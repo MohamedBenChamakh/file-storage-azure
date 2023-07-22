@@ -1,0 +1,136 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: File Storage API
+paths:
+  /files/{containerName}/{blobName}:
+    post:
+      summary: Upload a file to the specified container and blob name
+      parameters:
+        - in: path
+          name: containerName
+          required: true
+          schema:
+            type: string
+          description: Name of the Azure Storage container
+        - in: path
+          name: blobName
+          required: true
+          schema:
+            type: string
+          description: Name of the blob
+        - in: formData
+          name: file
+          required: true
+          schema:
+            type: file
+          description: The file to be uploaded
+      responses:
+        '200':
+          description: Successfully uploaded the file
+        '400':
+          description: Bad Request. Invalid file or parameters.
+        '404':
+          description: The specified container or blob name doesn't exist.
+    get:
+      summary: Download the file with the specified container and blob name
+      parameters:
+        - in: path
+          name: containerName
+          required: true
+          schema:
+            type: string
+          description: Name of the Azure Storage container
+        - in: path
+          name: blobName
+          required: true
+          schema:
+            type: string
+          description: Name of the blob
+      responses:
+        '200':
+          description: The file content will be returned in the response body.
+        '404':
+          description: The specified container or blob name doesn't exist.
+
+  /files/images/{containerName}/{blobName}:
+    get:
+      summary: Download an image file with the specified container and blob name
+      parameters:
+        - in: path
+          name: containerName
+          required: true
+          schema:
+            type: string
+          description: Name of the Azure Storage container
+        - in: path
+          name: blobName
+          required: true
+          schema:
+            type: string
+          description: Name of the blob
+      responses:
+        '200':
+          description: The image content will be returned in the response body.
+        '404':
+          description: The specified container or blob name doesn't exist.
+
+  /files/videos/{containerName}/{blobName}:
+    get:
+      summary: Download a video file with the specified container and blob name
+      parameters:
+        - in: path
+          name: containerName
+          required: true
+          schema:
+            type: string
+          description: Name of the Azure Storage container
+        - in: path
+          name: blobName
+          required: true
+          schema:
+            type: string
+          description: Name of the blob
+      responses:
+        '200':
+          description: The video content will be returned in the response body.
+        '404':
+          description: The specified container or blob name doesn't exist.
+
+  /files/{containerName}:
+    get:
+      summary: List all files in the specified container
+      parameters:
+        - in: path
+          name: containerName
+          required: true
+          schema:
+            type: string
+          description: Name of the Azure Storage container
+      responses:
+        '200':
+          description: The list of file names in the container will be returned in the response body.
+        '404':
+          description: The specified container doesn't exist.
+
+  /files/url/{containerName}/{blobName}:
+    get:
+      summary: Get a URL to download the file with the specified container and blob name
+      parameters:
+        - in: path
+          name: containerName
+          required: true
+          schema:
+            type: string
+          description: Name of the Azure Storage container
+        - in: path
+          name: blobName
+          required: true
+          schema:
+            type: string
+          description: Name of the blob
+      responses:
+        '200':
+          description: The URL to download the file will be returned in the response body.
+        '404':
+          description: The specified container or blob name doesn't exist.

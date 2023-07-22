@@ -1,0 +1,16 @@
+spring:
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+  azure:
+   storage:
+     connection-string: DefaultEndpointsProtocol=https;AccountName=${spring.azure.storage.accountName};AccountKey=${spring.azure.storage.accountKey};EndpointSuffix=core.windows.net
+     accountName: valuedigital
+     accountKey: UYgdVRDwQO3r+LbbQTnPSIG9hhB+Y+I3C63r5X02dCtTutrjn2A3zyiXTgL7QcXSXEWxzJsXelvY+AStzzqJIw==
+
+# Disable the stack trace in the error response
+server:
+  error:
+   include-stacktrace: never
+  port: 8081
