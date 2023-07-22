@@ -40,8 +40,8 @@ public class FileController {
 
         // Check if the file extension is valid (allowing only images and videos in this example)
         String originalFilename = file.getOriginalFilename();
-        if (originalFilename != null && !originalFilename.matches(".+\\.(jpg|jpeg|png|mp4)$")) {
-            throw new IllegalArgumentException("Invalid file extension. Allowed extensions: jpg, jpeg, png, mp4.");
+        if (originalFilename != null && !originalFilename.matches(".+\\.(jpg|jpeg|png|mp4|pdf)$")) {
+            throw new IllegalArgumentException("Invalid file extension. Allowed extensions: jpg, jpeg, png, mp4, pdf.");
         }
 
         // Check if the blob name already exists in the container
